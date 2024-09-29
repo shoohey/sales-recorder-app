@@ -8,14 +8,15 @@ module.exports = async (req, res) => {
     formData.append('audio', req.body.audio);
 
     try {
-      const response = await fetch('https://api.deepgram.com/v1/listen', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Token ${process.env.DEEPGRAM_API_KEY}`,
-          'Content-Type': 'audio/wav',
-        },
-        body: formData
-      });
+        const response = await fetch('https://api.deepgram.com/v1/listen', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Token ${process.env.DEEPGRAM_API_KEY}`,
+              'Content-Type': 'audio/wav',
+            },
+            body: formData
+          });
+          
 
       if (!response.ok) {
         throw new Error('Deepgram API error');
