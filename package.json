@@ -1,0 +1,13 @@
+{
+    "name": "sales-recording-app",
+    "version": "1.0.0",
+    "main": "index.js",
+    "scripts": {
+      "start": "node src/index.js"
+    },
+    "dependencies": {
+      "deepgram-sdk": "^1.2.3",
+      "openai": "^1.0.0"
+    }
+  }
+  
