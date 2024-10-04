@@ -10,12 +10,23 @@ export const config = {
 
 export default async (req, res) => {
   try {
+    // リクエストメソッドの確認
+    if (req.method !== 'POST') {
+      res.status(405).json({ error: 'Method Not Allowed' });
+      return;
+    }
+
     // リクエストから音声データを取得
     const buf = await buffer(req);
     const audioData = buf;
 
     // Deepgram APIキーを環境変数から取得
     const apiKey = process.env.DEEPGRAM_API_KEY;
+    if (!apiKey) {
+      console.error('Deepgram APIキーが設定されていません。');
+      res.status(500).json({ error: 'Deepgram APIキーがサーバーで設定されていません。' });
+      return;
+    }
 
     // Deepgram APIに音声データを送信
     const response = await fetch(`https://api.deepgram.com/v1/listen?language=ja&punctuate=true`, {
