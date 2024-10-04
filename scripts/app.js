@@ -1,149 +1,171 @@
-<script src="app.js"></script>
+// scripts/app.js
+
 let mediaRecorder;
 let audioChunks = [];
 
+const startButton = document.getElementById('start');
+const pauseButton = document.getElementById('pause');
+const resumeButton = document.getElementById('resume');
+const stopButton = document.getElementById('stop');
+const statusElement = document.getElementById('status');
+const resultElement = document.getElementById('result');
+
+startButton.addEventListener('click', startRecording);
+pauseButton.addEventListener('click', pauseRecording);
+resumeButton.addEventListener('click', resumeRecording);
+stopButton.addEventListener('click', stopRecording);
+
+// ボタンの初期状態を設定
+setButtonState('initial');
+
+// ユーザーのマイクへのアクセスを取得
 navigator.mediaDevices.getUserMedia({ audio: true })
   .then(stream => {
     mediaRecorder = new MediaRecorder(stream);
 
-    document.getElementById('start').addEventListener('click', () => {
-      mediaRecorder.start();
-    });
-
-    document.getElementById('pause').addEventListener('click', () => {
-      mediaRecorder.pause();
-    });
-
-    document.getElementById('resume').addEventListener('click', () => {
-      mediaRecorder.resume();
-    });
-
-    document.getElementById('stop').addEventListener('click', () => {
-      mediaRecorder.stop();
-    });
-
-    mediaRecorder.ondataavailable = event => {
+    mediaRecorder.addEventListener('dataavailable', event => {
       audioChunks.push(event.data);
-    };
+    });
 
-    mediaRecorder.onstop = () => {
-      const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-      // Deepgramへの送信処理をここで呼び出す
-    };
+    mediaRecorder.addEventListener('start', () => {
+      statusElement.innerText = '録音中...';
+      setButtonState('recording');
+    });
+
+    mediaRecorder.addEventListener('pause', () => {
+      statusElement.innerText = '一時停止中...';
+      setButtonState('paused');
+    });
+
+    mediaRecorder.addEventListener('resume', () => {
+      statusElement.innerText = '録音再開...';
+      setButtonState('recording');
+    });
+
+    mediaRecorder.addEventListener('stop', () => {
+      statusElement.innerText = '録音終了';
+      setButtonState('stopped');
+
+      const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+      audioChunks = []; // 次の録音に備えてクリア
+
+      // Deepgramへの送信
+      sendToDeepgram(audioBlob);
+    });
+  })
+  .catch(error => {
+    console.error('マイクへのアクセスが拒否されました:', error);
+    statusElement.innerText = 'マイクへのアクセスが必要です。';
   });
 
+// 録音開始
+function startRecording() {
+  if (mediaRecorder && mediaRecorder.state === 'inactive') {
+    mediaRecorder.start();
+  }
+}
 
-  async function sendToDeepgram(audioBlob) {
-    const apiKey = 'YOUR_DEEPGRAM_API_KEY'; // 実際には環境変数から取得
-    const formData = new FormData();
-    formData.append('audio', audioBlob);
-  
-    const response = await fetch('https://api.deepgram.com/v1/listen', {
+// 録音一時停止
+function pauseRecording() {
+  if (mediaRecorder && mediaRecorder.state === 'recording') {
+    mediaRecorder.pause();
+  }
+}
+
+// 録音再開
+function resumeRecording() {
+  if (mediaRecorder && mediaRecorder.state === 'paused') {
+    mediaRecorder.resume();
+  }
+}
+
+// 録音停止
+function stopRecording() {
+  if (mediaRecorder && (mediaRecorder.state === 'recording' || mediaRecorder.state === 'paused')) {
+    mediaRecorder.stop();
+  }
+}
+
+// Deepgramに音声データを送信
+async function sendToDeepgram(audioBlob) {
+  try {
+    const response = await fetch('/api/deepgram', {
       method: 'POST',
       headers: {
-        'Authorization': `Token ${apiKey}`
+        'Content-Type': 'application/octet-stream',
       },
-      body: formData
+      body: audioBlob,
     });
-  
+
     const data = await response.json();
-    const transcript = data.results.channels[0].alternatives[0].transcript;
-    // Difyへの送信処理をここで呼び出す
-  }
 
-  
-
-async function sendToDeepgram(audioBlob) {
-    try {
-      // サーバーサイドのエンドポイント '/api/deepgram' に音声データを送信
-      const response = await fetch('/api/deepgram', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/octet-stream', // バイナリデータの送信
-        },
-        body: audioBlob, // 音声データのBlobオブジェクト
-      });
-  
-      const data = await response.json();
-  
-      if (data.transcript) {
-        // 文字起こし結果を取得し、次の処理へ
-        sendToDify(data.transcript);
-      } else {
-        resultElement.innerText = '文字起こしに失敗しました。';
-      }
-    } catch (error) {
-      console.error('Deepgramへの送信エラー:', error);
-      resultElement.innerText = '文字起こし処理中にエラーが発生しました。';
+    if (data.transcript) {
+      // Difyへの送信
+      sendToDify(data.transcript);
+    } else {
+      resultElement.innerText = '文字起こしに失敗しました。';
     }
+  } catch (error) {
+    console.error('Deepgramへの送信エラー:', error);
+    resultElement.innerText = '文字起こし処理中にエラーが発生しました。';
   }
-  
+}
 
-  // api/dify.js
+// Difyに文字起こしデータを送信
+async function sendToDify(transcript) {
+  try {
+    const response = await fetch('/api/dify', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ transcript }),
+    });
 
-export default async (req, res) => {
-    try {
-      // リクエストから文字起こしテキストを取得
-      const { transcript } = req.body;
-  
-      // Dify APIキーを環境変数から取得
-      const apiKey = process.env.DIFY_API_KEY;
-  
-      // プロンプトを作成
-      const prompt = `以下の会話内容を要約し、営業マンへのフィードバックを提供してください。\n\n${transcript}`;
-  
-      // Dify APIにリクエストを送信
-      const response = await fetch('https://api.dify.ai/v1/your_endpoint', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          prompt: prompt,
-          // 必要に応じて他のパラメータも追加
-        }),
-      });
-  
-      const data = await response.json();
-  
-      if (data.output) {
-        // フィードバック結果を返す
-        res.status(200).json({ output: data.output });
-      } else {
-        res.status(500).json({ error: 'Difyからの応答が無効です。' });
-      }
-    } catch (error) {
-      console.error('Dify APIエラー:', error);
-      res.status(500).json({ error: 'Dify APIの呼び出しに失敗しました。' });
+    const data = await response.json();
+
+    if (data.output) {
+      displayResult(data.output);
+    } else {
+      resultElement.innerText = 'フィードバックの生成に失敗しました。';
     }
-  };
-  
-  async function sendToDify(transcript) {
-    try {
-      const response = await fetch('/api/dify', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ transcript }),
-      });
-  
-      const data = await response.json();
-  
-      if (data.output) {
-        displayResult(data.output);
-      } else {
-        resultElement.innerText = 'フィードバックの生成に失敗しました。';
-      }
-    } catch (error) {
-      console.error('Difyへの送信エラー:', error);
-      resultElement.innerText = 'フィードバック生成中にエラーが発生しました。';
-    }
+  } catch (error) {
+    console.error('Difyへの送信エラー:', error);
+    resultElement.innerText = 'フィードバック生成中にエラーが発生しました。';
   }
-  
+}
 
-  function displayResult(output) {
-    resultElement.innerText = output;
+// 結果を表示
+function displayResult(output) {
+  resultElement.innerText = output;
+}
+
+// ボタンの状態を設定
+function setButtonState(state) {
+  switch (state) {
+    case 'initial':
+      startButton.disabled = false;
+      pauseButton.disabled = true;
+      resumeButton.disabled = true;
+      stopButton.disabled = true;
+      break;
+    case 'recording':
+      startButton.disabled = true;
+      pauseButton.disabled = false;
+      resumeButton.disabled = true;
+      stopButton.disabled = false;
+      break;
+    case 'paused':
+      startButton.disabled = true;
+      pauseButton.disabled = true;
+      resumeButton.disabled = false;
+      stopButton.disabled = false;
+      break;
+    case 'stopped':
+      startButton.disabled = false;
+      pauseButton.disabled = true;
+      resumeButton.disabled = true;
+      stopButton.disabled = true;
+      break;
   }
-  
+}
