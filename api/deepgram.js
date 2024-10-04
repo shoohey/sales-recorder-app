@@ -16,11 +16,7 @@ export default async (req, res) => {
       return;
     }
 
-    // リクエストから音声データを取得
-    const buf = await buffer(req);
-    const audioData = buf;
-
-    // Deepgram APIキーを環境変数から取得
+    // Deepgram APIキーの取得
     const apiKey = process.env.DEEPGRAM_API_KEY;
     if (!apiKey) {
       console.error('Deepgram APIキーが設定されていません。');
@@ -28,17 +24,24 @@ export default async (req, res) => {
       return;
     }
 
+    // リクエストから音声データを取得
+    const audioBuffer = await buffer(req);
+    if (!audioBuffer || audioBuffer.length === 0) {
+      res.status(400).json({ error: '音声データが提供されていません。' });
+      return;
+    }
+
     // Deepgram APIに音声データを送信
-    const response = await fetch(`https://api.deepgram.com/v1/listen?language=ja&punctuate=true`, {
+    const response = await fetch('https://api.deepgram.com/v1/listen?language=ja&punctuate=true', {
       method: 'POST',
       headers: {
         'Authorization': `Token ${apiKey}`,
         'Content-Type': 'audio/webm', // 音声データの形式に合わせる
       },
-      body: audioData,
+      body: audioBuffer,
     });
 
-    // レスポンスのステータスコードをチェック
+    // Deepgram APIのレスポンスを処理
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Deepgram APIエラー:', response.status, errorText);
@@ -48,13 +51,13 @@ export default async (req, res) => {
 
     const data = await response.json();
 
-    // 文字起こしの結果を取得
+    // 文字起こし結果の取得
     const transcript = data.results.channels[0].alternatives[0].transcript;
 
     // レスポンスとして文字起こし結果を返す
     res.status(200).json({ transcript });
   } catch (error) {
-    console.error('Deepgram API呼び出し中の例外:', error);
-    res.status(500).json({ error: 'Deepgram APIの呼び出し中にエラーが発生しました。' });
+    console.error('サーバーエラー:', error);
+    res.status(500).json({ error: 'サーバー内部でエラーが発生しました。' });
   }
 };

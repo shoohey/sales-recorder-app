@@ -1,0 +1,13 @@
+{
+    "name": "sales-feedback-app",
+    "version": "1.0.0",
+    "description": "Sales feedback web application",
+    "main": "index.js",
+    "scripts": {},
+    "author": "",
+    "license": "MIT",
+    "dependencies": {
+      "micro": "^9.3.4"
+    }
+  }
+  
