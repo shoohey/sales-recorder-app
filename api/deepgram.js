@@ -4,7 +4,7 @@ import { buffer } from 'micro';
 
 export const config = {
   api: {
-    bodyParser: false, // デフォルトのボディパーサーを無効化
+    bodyParser: false,
   },
 };
 
@@ -18,14 +18,22 @@ export default async (req, res) => {
     const apiKey = process.env.DEEPGRAM_API_KEY;
 
     // Deepgram APIに音声データを送信
-    const response = await fetch('https://api.deepgram.com/v1/listen', {
+    const response = await fetch(`https://api.deepgram.com/v1/listen?language=ja&punctuate=true`, {
       method: 'POST',
       headers: {
         'Authorization': `Token ${apiKey}`,
-        'Content-Type': 'audio/wav', // 音声データの形式に応じて変更
+        'Content-Type': 'audio/webm', // 音声データの形式に合わせる
       },
       body: audioData,
     });
+
+    // レスポンスのステータスコードをチェック
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Deepgram APIエラー:', response.status, errorText);
+      res.status(response.status).json({ error: `Deepgram APIエラー: ${errorText}` });
+      return;
+    }
 
     const data = await response.json();
 
@@ -35,7 +43,7 @@ export default async (req, res) => {
     // レスポンスとして文字起こし結果を返す
     res.status(200).json({ transcript });
   } catch (error) {
-    console.error('Deepgram APIエラー:', error);
-    res.status(500).json({ error: 'Deepgram APIの呼び出しに失敗しました。' });
+    console.error('Deepgram API呼び出し中の例外:', error);
+    res.status(500).json({ error: 'Deepgram APIの呼び出し中にエラーが発生しました。' });
   }
 };

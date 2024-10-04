@@ -99,11 +99,12 @@ async function sendToDeepgram(audioBlob) {
 
     const data = await response.json();
 
-    if (data.transcript) {
+    if (response.ok && data.transcript) {
       // Difyへの送信
       sendToDify(data.transcript);
     } else {
-      resultElement.innerText = '文字起こしに失敗しました。';
+      const errorMessage = data.error || '文字起こしに失敗しました。';
+      resultElement.innerText = errorMessage;
     }
   } catch (error) {
     console.error('Deepgramへの送信エラー:', error);
@@ -124,10 +125,11 @@ async function sendToDify(transcript) {
 
     const data = await response.json();
 
-    if (data.output) {
+    if (response.ok && data.output) {
       displayResult(data.output);
     } else {
-      resultElement.innerText = 'フィードバックの生成に失敗しました。';
+      const errorMessage = data.error || 'フィードバックの生成に失敗しました。';
+      resultElement.innerText = errorMessage;
     }
   } catch (error) {
     console.error('Difyへの送信エラー:', error);
