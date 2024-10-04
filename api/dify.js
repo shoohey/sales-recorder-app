@@ -24,7 +24,7 @@ export default async (req, res) => {
       }
   
       // Dify APIエンドポイントの設定
-      const endpoint = 'https://api.dify.ai/v1/apps/workflow/mLxX5DjCY2SrNEyC/run'; // 実際のエンドポイントに置き換え
+      const endpoint = 'https://api.dify.ai/v1/apps/mLxX5DjCY2SrNEyC/run'; // 実際のエンドポイントに置き換え
   
       // リクエストペイロードの作成
       const payload = {
