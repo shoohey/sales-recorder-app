@@ -2,19 +2,37 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>営業フィードバックアプリ</title>
-  <link rel="stylesheet" href="styles/styles.css">
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <h1>営業フィードバックアプリ</h1>
-  <div id="controls">
-    <button id="start">録音開始</button>
-    <button id="pause">一時停止</button>
-    <button id="resume">再開</button>
-    <button id="stop">録音終了</button>
+  <div class="container">
+    <div class="app-card">
+      <h1>営業フィードバックアプリ</h1>
+      <div class="controls">
+        <button id="start" class="btn btn-start">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+          録音開始
+        </button>
+        <button id="pause" class="btn btn-pause">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+          一時停止
+        </button>
+        <button id="resume" class="btn btn-resume">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+          再開
+        </button>
+        <button id="stop" class="btn btn-stop">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg>
+          録音終了
+        </button>
+      </div>
+      <div id="status" class="status" aria-live="polite"></div>
+      <div id="result" class="result"></div>
+    </div>
   </div>
-  <div id="status"></div>
-  <div id="result"></div>
-  <script src="scripts/app.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
