@@ -7,12 +7,21 @@
 </head>
 <body>
   <h1>営業フィードバックアプリ</h1>
+  
+  <!-- 録音機能のコントロール -->
   <div id="controls">
     <button id="recordButton">録音開始</button>
     <button id="pauseButton">一時停止</button>
     <button id="resumeButton">再開</button>
     <button id="stopButton">録音終了</button>
   </div>
+  
+  <!-- 音声ファイルのアップロード機能 -->
+  <div id="upload">
+    <input type="file" id="audioFileInput" accept="audio/*">
+    <button id="uploadButton">音声ファイルをアップロード</button>
+  </div>
+  
   <div id="status"></div>
   <div id="result"></div>
 
