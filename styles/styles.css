@@ -7,7 +7,6 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   margin: 0;
   padding: 20px;
   box-sizing: border-box;
@@ -52,10 +51,10 @@ button:active {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-#start { background-color: #48bb78; }
-#pause { background-color: #4299e1; }
-#resume { background-color: #ecc94b; }
-#stop { background-color: #f56565; }
+#recordButton { background-color: #48bb78; }
+#pauseButton { background-color: #4299e1; }
+#resumeButton { background-color: #ecc94b; }
+#stopButton { background-color: #f56565; }
 
 #status, #result {
   background-color: white;
