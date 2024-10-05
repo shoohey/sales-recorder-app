@@ -1,3 +1,107 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+h1 {
+  color: #2d3748;
+  font-size: 2.5rem;
+  text-align: center;
+  margin-bottom: 2rem;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+}
+
+#controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+button {
+  background-color: #4a5568;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#recordButton { background-color: #48bb78; }
+#pauseButton { background-color: #4299e1; }
+#resumeButton { background-color: #ecc94b; }
+#stopButton { background-color: #f56565; }
+
+#status, #result {
+  background-color: white;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 1rem;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#status {
+  font-weight: 600;
+  text-align: center;
+  color: #4a5568;
+}
+
+#result {
+  min-height: 100px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+@media (max-width: 600px) {
+  body {
+    padding: 10px;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  button {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+#result:not(:empty) {
+  animation: fadeIn 0.5s ease-out;
+}
+
 /* 既存のスタイルはそのままです。追加部分のみ記載します。 */
 
 /* アップロードセクションのスタイル */
