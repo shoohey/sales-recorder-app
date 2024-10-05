@@ -1,3 +1,15 @@
+function startRecording() {
+  // 録音開始の処理
+}
+
+// ボタンの要素を取得
+const recordButton = document.getElementById('recordButton');
+
+// イベントリスナーの設定
+recordButton.addEventListener('click', startRecording);
+
+
+
 // Deepgramに音声データを送信
 async function sendToDeepgram(audioBlob) {
   try {
@@ -24,3 +36,4 @@ async function sendToDeepgram(audioBlob) {
     resultElement.innerText = '文字起こし処理中にエラーが発生しました。';
   }
 }
+
