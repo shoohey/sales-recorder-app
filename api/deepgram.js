@@ -41,23 +41,20 @@ export default async (req, res) => {
       body: audioBuffer,
     });
 
-    // Deepgram APIのレスポンスを処理
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Deepgram APIエラー:', response.status, errorText);
-      res.status(response.status).json({ error: `Deepgram APIエラー: ${errorText}` });
-      return;
-    }
-
+    // レスポンスのステータスコードをチェック
     const data = await response.json();
 
-    // 文字起こし結果の取得
-    const transcript = data.results.channels[0].alternatives[0].transcript;
-
-    // レスポンスとして文字起こし結果を返す
-    res.status(200).json({ transcript });
+    if (response.ok && data.results) {
+      // 文字起こし結果の取得
+      const transcript = data.results.channels[0].alternatives[0].transcript;
+      res.status(200).json({ transcript });
+    } else {
+      const errorMessage = data.error || '文字起こしに失敗しました。';
+      console.error('Deepgram APIエラー:', response.status, response.statusText, data);
+      res.status(response.status).json({ error: errorMessage });
+    }
   } catch (error) {
     console.error('サーバーエラー:', error);
-    res.status(500).json({ error: 'サーバー内部でエラーが発生しました。' });
+    res.status(500).json({ error: 'Deepgram APIの呼び出し中にエラーが発生しました。' });
   }
 };
