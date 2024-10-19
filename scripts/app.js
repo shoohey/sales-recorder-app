@@ -153,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await response.json();
 
       if (response.ok && data.output) {
-        resultElement.innerText = JSON.stringify(data.output, null, 2);
+        resultElement.innerText = data.output.replace(/\n/g, '<br>');
       } else {
         const errorMessage = data.error || 'フィードバックの生成に失敗しました。';
         console.error('Dify APIエラー:', errorMessage);
