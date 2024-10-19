@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function sendToDify(transcript) {
     // Difyへの送信処理
     // 結果を resultElement に表示する
-    resultElement.innerText = `文字起こしデータ：{transcript}`
+    resultElement.innerText = `文字起こしデータ：${transcript}`
     try {
       const response = await fetch('/api/dify', {
         method: 'POST',
@@ -153,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await response.json();
 
       if (response.ok && data.output) {
-        resultElement.innerText = data.output;
+        resultElement.innerText = JSON.stringify(data.output, null, 2);
       } else {
         const errorMessage = data.error || 'フィードバックの生成に失敗しました。';
         console.error('Dify APIエラー:', errorMessage);
