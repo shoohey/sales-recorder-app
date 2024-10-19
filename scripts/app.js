@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function sendToDify(transcript) {
     // Difyへの送信処理
     // 結果を resultElement に表示する
-    resultElement.innerText = transcript
+    resultElement.innerText = `文字起こしデータ：{transcript}`
     try {
       const response = await fetch('/api/dify', {
         method: 'POST',
