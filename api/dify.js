@@ -55,7 +55,7 @@ export default async (req, res) => {
       const data = await response.json();
 
       // フィードバック結果を取得
-      const output = data.outputs?.result || data.outputs || data; // Difyのレスポンス形式に合わせて調整
+      const output = data?.data?.outputs?.result
 
       // レスポンスとしてフィードバック結果を返す
       res.status(200).json({ output });
