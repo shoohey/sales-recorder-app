@@ -30,6 +30,7 @@ export default async (req, res) => {
       const payload = {
         inputs: {
           transcript: transcript, // LLMノードの入力フィールド名に合わせる
+          user: 'abc-123'
         }
       };
   
