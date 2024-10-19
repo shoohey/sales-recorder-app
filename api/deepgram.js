@@ -55,6 +55,6 @@ export default async (req, res) => {
     }
   } catch (error) {
     console.error('サーバーエラー:', error);
-    res.status(500).json({ error: 'Deepgram APIの呼び出し中にエラーが発生しました。' });
+    res.status(500).json({ error: `Deepgram APIの呼び出し中にエラーが発生しました。${JSON.stringify(error, null, 2)}` });
   }
 };
